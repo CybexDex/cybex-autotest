@@ -51,5 +51,27 @@ pytest --reruns 5 --reruns-delay 1        // 设置失败重跑，重跑次数�
 pytest -v -s test_account.py              // 跑指定的用例文件，展示详细信息
 ```
 
+#### 4.加入新链
+默认config.ini中配置了2条链，dextestchain和sarcychain，不指定链跑时默认使用dextestchain。如需要跑新的链，需要先将链相关的信息和nathan账号配置到config.ini文件中：
+
+```Shell
+[chainname]
+node_url = ******
+chain_id = ******
+master_account = ******
+master_pubkey = ******
+master_privkey =  ******
+```
+
+举例：
+```Shell
+[sarcychain]
+node_url = ws://47.75.211.121:28095
+chain_id = c7b4ce772930412d54ba7b6ea31033c063f819cd16a83adf2c555981bad66f9a
+master_account = nathan
+master_pubkey = CYB6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+master_privkey =  5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+```
+
 #### 4.后续计划
 持续更新，请关注。

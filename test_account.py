@@ -121,7 +121,7 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
-        temp.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+        temp.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
@@ -178,7 +178,7 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
-        temp.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+        temp.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
@@ -234,7 +234,7 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
-        temp.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+        temp.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
 
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)

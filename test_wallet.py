@@ -35,17 +35,17 @@ def test_lock(INSTANCE, cleartxpool):
     
 def test_unlock(INSTANCE, cleartxpool):
     logging.info('test unlock wallet')
-    INSTANCE.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+    INSTANCE.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     assert not INSTANCE.wallet.locked()
 
 def test_changePassphrase(INSTANCE, cleartxpool):
     logging.info('test change wallet phase')
-    INSTANCE.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+    INSTANCE.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     INSTANCE.wallet.changePassphrase('654321')
     INSTANCE.wallet.lock()
     INSTANCE.wallet.unlock('654321')
     assert not INSTANCE.wallet.locked()
-    INSTANCE.wallet.changePassphrase(INSTANCE.const['test_wallet_pwd'])
+    INSTANCE.wallet.changePassphrase(CFG['wallet']['test_wallet_pwd'])
     
 def test_getAccount(INSTANCE, cleartxpool):
     logging.info('test get account from wallet')
