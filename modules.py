@@ -203,7 +203,7 @@ def update_active_keys(inst, obj, account=None, **kwargs):
     return inst.finalizeOp(op, account["name"], "active", **kwargs)
 
 def reset_wallet(inst):
-    inst.wallet.unlock(inst.const['test_wallet_pwd'])
+    inst.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     for acc in inst.wallet.getAccounts():
         inst.wallet.removeAccount(acc['name'])
     # add master account key
