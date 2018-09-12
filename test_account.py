@@ -37,7 +37,7 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     fee = history['op'][1]['fee']['amount']
     regName = history['op'][1]['name']
     assert name == regName
-    assert delta*100000 < fee
+    assert delta*100000 == pytest.approx(fee, rel=0.1)
 
 def test_updateActiveKey(INSTANCE, cleartxpool):
     account = create_accounts(INSTANCE)[0]
