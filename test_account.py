@@ -310,6 +310,6 @@ def test_referrar(INSTANCE, cleartxpool):
     fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
     left = amount - fee
     assert cybex.Account(name).balance('CYB') == left
-    # print(Vesting('1.13.0', bitshares_instance=self.instance).account['name'])
+    time.sleep(20)
     after = Vesting('1.13.0', bitshares_instance=INSTANCE).claimable
     assert after>before
