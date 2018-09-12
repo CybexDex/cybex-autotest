@@ -166,6 +166,42 @@ def test_partially_match(INSTANCE, market, data4market, cleartxpool):
     assert len(alice.openorders) == 0
     assert len(bob.openorders) == 1
 
+def test_cull_small_order(INSTANCE, market, data4market, cleartxpool):
+    asset1 = cybex.Asset(data4market['asset1'])
+    asset2 = cybex.Asset(data4market['asset2'])
+    m = cybex.Market(base = asset1, quote = asset2,
+        cybex_instance = INSTANCE)
+    alice = cybex.Account(data4market['alice']['account'])
+    bob = cybex.Account(data4market['bob']['account'])
+
+    # sell 1999.999 asset1 at price 1999.999
+    # amount to sell (asset2, 1)
+    # min to receive (asset2, 1)
+    m.sell(1999.999, 1, 3600, killfill = False, account = bob)
+
+    # to ensure order 1 applied first
+    time.sleep(5)
+
+    # buy 1 asset2 at price 2000
+    # amount to sell (asset1, 2000)
+    # min to receive (asset2, 1)
+    m.buy(2000, 1, 3600, killfill = False, account = alice)
+
+    # after matching
+    # since usd_for_sale(2000) > core_for_sale(1) * match_price(1999.9999)
+    # usd will receive core_for_sale(1)
+    # core will receive core_for_sale(1) * match_price(1999.999) ->1999.999
+    # usd will pay core receive, and core will pay usd receive
+
+    # alice will leave an order with amount to sell(asset1, 0.001), at price 1:2000
+    # min_to_receive will be 0.001 / 2000 = 0.0000005
+    # min_to_receive will be less than precision
+    # and will be culled
+
+    time.sleep(5)
+    assert len(alice.openorders) == 0
+    assert len(bob.openorders) == 0
+   
 def test_market_history(INSTANCE, market, data4market, cleartxpool):
     asset1 = cybex.Asset(data4market['asset1'])
     asset2 = cybex.Asset(data4market['asset2'])
