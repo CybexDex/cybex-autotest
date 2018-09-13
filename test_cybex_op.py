@@ -73,7 +73,7 @@ def test_claim_vesting_balance(INSTANCE, data4cybexop, cleartxpool):
     logging.info("wait 5s for new block to ensure sequence")
     time.sleep(5)
     balance_after = to_account.balance(ass)
-    assert (balance_after - balance_ahead).amount == value
+    assert pytest.approx((balance_after - balance_ahead).amount) == value
     assert 'vesting_policy' in new_obj
     assert new_obj['sender'] == fro_account['id']
     assert new_obj['vesting_policy']['vesting_duration_seconds'] == expire
