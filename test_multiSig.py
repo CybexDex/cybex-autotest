@@ -48,7 +48,7 @@ def test_multiSig1(INSTANCE, cleartxpool):
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name3)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
-        temp.wallet.unlock(INSTANCE.const['test_wallet_pwd'])
+        temp.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
 
     # # need A, B active key to fire a multi-sig transanction
     reset_wallet(INSTANCE)
