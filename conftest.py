@@ -72,8 +72,8 @@ def market(INSTANCE, data4market):
 @pytest.fixture(scope='module')
 def data4market(INSTANCE):
     # logging.info(debug_data())
-    # data = create_data(INSTANCE)
-    data = debug_data()
+    data = create_data(INSTANCE)
+    # data = debug_data()
     add_private_key(INSTANCE,[data['alice']['active']['wif_priv_key'],data['bob']['active']['wif_priv_key']])
     logging.info("add private key in wallet for alice and bob")
     return data
