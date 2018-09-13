@@ -37,7 +37,7 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     fee = history['op'][1]['fee']['amount']
     regName = history['op'][1]['name']
     assert name == regName
-    assert delta*100000 < fee
+    assert delta*100000 == pytest.approx(fee, rel=0.1)
 
 def test_updateActiveKey(INSTANCE, cleartxpool):
     account = create_accounts(INSTANCE)[0]
@@ -310,6 +310,6 @@ def test_referrar(INSTANCE, cleartxpool):
     fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
     left = amount - fee
     assert cybex.Account(name).balance('CYB') == left
-    # print(Vesting('1.13.0', bitshares_instance=self.instance).account['name'])
+    time.sleep(20)
     after = Vesting('1.13.0', bitshares_instance=INSTANCE).claimable
     assert after>before
