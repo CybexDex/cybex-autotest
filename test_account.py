@@ -291,8 +291,12 @@ def test_createCommittee(INSTANCE, cleartxpool):
     assert info != None      
 
 def test_referrar(INSTANCE, cleartxpool):
-    before = Vesting('1.13.0', bitshares_instance=INSTANCE).claimable
+    logging.info('referrar test start')
     reset_wallet(INSTANCE)
+    acc = cybex.Account('nathan')
+    before = INSTANCE.rpc.get_objects([cybex.Account('nathan')['cashback_vb']])[0]['balance']['amount']
+    vesting_before = INSTANCE.rpc.get_objects([dict(acc)['statistics']])[0]['pending_vested_fees']
+
     createdAccount = create_accounts(INSTANCE)[0]
     if createdAccount == False:
         logging.info('create account error')
@@ -302,14 +306,12 @@ def test_referrar(INSTANCE, cleartxpool):
     activeKey = createdAccount['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
     account = cybex.Account(name)
-
-    amount = 20000
+    # fee to update account to LTM
+    amount = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
     INSTANCE.transfer(name, amount, 'CYB', '', 'nathan')
     INSTANCE.upgrade_account(account=account)
-    # fee to update an account to LTM
-    fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
-    left = amount - fee
-    assert cybex.Account(name).balance('CYB') == left
-    time.sleep(20)
-    after = Vesting('1.13.0', bitshares_instance=INSTANCE).claimable
-    assert after>before
+
+    after =INSTANCE.rpc.get_objects([cybex.Account('nathan')['cashback_vb']])[0]['balance']['amount']
+    vesting_after = INSTANCE.rpc.get_objects([dict(acc)['statistics']])[0]['pending_vested_fees']
+    logging.info('balance before %s - after %s, vesting before %s - after %s', before, after, vesting_before, vesting_after)
+    assert after > before or vesting_after > vesting_before
