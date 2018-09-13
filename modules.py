@@ -187,6 +187,21 @@ def update_active_key(inst, key, account=None, **kwargs):
     })
     return inst.finalizeOp(op, account["name"], "active", **kwargs)
 
+def update_owner_keys(inst, obj, account=None, **kwargs):
+    # for testing multi-Sig
+    # need fee to update active keys
+    fee = inst.fee[6]['fee']['fee']/100000
+    inst.transfer(account, fee, 'CYB', '', 'nathan')
+    account = cybex.Account(account)
+    account["active"] = obj
+    op = operations.Account_update(**{
+        "fee": {"amount": 0, "asset_id": "1.3.0"},
+        "account": account["id"],
+        "owner": account["active"],
+        "extensions": {}
+    })
+    return inst.finalizeOp(op, account["name"], "active", **kwargs)
+
 def update_active_keys(inst, obj, account=None, **kwargs):
     # for testing multi-Sig
     # need fee to update active keys
