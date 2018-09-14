@@ -1,22 +1,21 @@
 ## 测试用例脚本说明
-该仓库测试用例脚本主要用于Cybex链的功能测试，可用Smoke测试、DailyBuilding、集成测试、系统测试等。
+该仓库测试用例脚本主要用于Cybex链的功能测试，可用于Smoke测试、DailyBuilding、集成测试、系统测试等。
 
-#### 1. 环境搭建
+#### 1.环境搭建
 请先安装好python3和pip3
 ```Shell
 pip3 install -U virtualenv 
 python3 -m virtualenv venv 
 source venv/bin/activate 
-pip install pytest
 ```
 拉最新的代码后
 ```Shell
-cd autotestForCybex
+cd cybex-autotest
 pip install -r requirements.txt
 ```
 
 #### 2.目录结构
-目录结构解析：
+目录结构：
 ```Shell
 $ tree
 .
