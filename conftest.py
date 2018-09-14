@@ -2,6 +2,7 @@ from modules import *
 
 def pytest_addoption(parser): 
     parser.addoption("--chain", action="store",default="dextestchain",help="option to specify chain")
+    parser.addoption("--notcheckrte", action="store_true",help="option to disable the assert for rte")
 
 @pytest.fixture(scope='session')
 def INSTANCE(pytestconfig):
@@ -13,6 +14,7 @@ def INSTANCE(pytestconfig):
     instance = cybex.cybex.Cybex(node = chainNodeUrl)
     instance.const = dict(CFG[chainName])
     instance.chain = dict(CFG[chainName])
+    instance.notcheckrte = pytestconfig.getoption('notcheckrte')
     fees = instance.rpc.get_global_properties([])['parameters']['current_fees']['parameters']
     ops = cybex.cybex.intercept_bitshares.cybex_ops
     instance.fee = [{'id': fees[i][0], 'op': ops[i], 'fee': fees[i][1]} for i in range(len(fees))]

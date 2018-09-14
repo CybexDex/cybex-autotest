@@ -517,3 +517,15 @@ def cancel_all(INSTANCE, accs):
         logging.info(err)
         return False
     return True
+
+
+def assert4rte(inst, exp, errinfo="[default]assert result is false"):
+    if inst.notcheckrte:
+        return "in the mode of not check rte"
+    else:
+        try:
+            assert exp, errinfo
+            return True
+        except Exception as err:
+            logging.info(err)
+            return False

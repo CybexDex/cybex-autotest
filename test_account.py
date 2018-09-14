@@ -15,11 +15,11 @@ def test_get_public_key(INSTANCE, cleartxpool):
     assert a['active']['key_auths'][0][0] == pubKey
 
 def test_createAccount(INSTANCE, cleartxpool):
-        ts = time.time()
-        name = 'test' + str(int(ts))
-        logging.info("account %s will be created", name)
-        assert create_account(INSTANCE, name)
-        logging.info("account %s created success",name)
+    ts = time.time()
+    name = 'test' + str(int(ts))
+    logging.info("account %s will be created", name)
+    assert create_account(INSTANCE, name)
+    logging.info("account %s created success",name)
 
 def test_createAccountFee(INSTANCE, cleartxpool):
     ts = time.time()
