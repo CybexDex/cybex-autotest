@@ -39,16 +39,21 @@ $ tree
 #### 3.执行用例
 
 ```Shell
-cd autotestForCybex
+cd cybex-autotest
 pytest
 ```
 
-
+更多用法:
 ```Shell
-pytest --chain sarcychain    // 跑指定的链
-pytest --timeout=0.5         // 设置超时时间
+pytest --chain sarcychain                 // 跑指定的链
+pytest --timeout= 5                      // 设置超时时间, 超时时间为5s
 pytest --reruns 5 --reruns-delay 1        // 设置失败重跑，重跑次数为5次，每次重跑delay 1s
-pytest -v -s test_account.py              // 跑指定的用例文件，展示详细信息
+pytest test_account.py                    // 跑指定的用例文件
+pytest test_account.py::test_get_public_key              // 跑指定的用例文件中的指定用例
+pytest -v test_account.py                 // 跑指定的用例文件，展示详细信息
+pytest -s test_account.py                 // 跑指定的用例文件，展示标准输出
+pytest --html=report/report.html          // 生成html格式报告
+pytest --html=report/report.html --chain sarcychain --timeout= 5  --reruns 5 --reruns-delay 1        // 可以叠加使用
 ```
 
 #### 4.加入新链
@@ -73,5 +78,5 @@ master_pubkey = CYB6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 master_privkey =  5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
 ```
 
-#### 4.后续计划
+#### 5.后续计划
 持续更新，请关注。
