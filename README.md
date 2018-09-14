@@ -45,8 +45,9 @@ pytest
 更多用法:
 ```Shell
 pytest --chain sarcychain                 // 跑指定的链
-pytest --timeout= 5                      // 设置超时时间, 超时时间为5s
+pytest --timeout= 5                       // 设置超时时间, 超时时间为5s
 pytest --reruns 5 --reruns-delay 1        // 设置失败重跑，重跑次数为5次，每次重跑delay 1s
+pytest --notcheckrte                      // 设置该参数的话，rte的所有assert将自动略过
 pytest test_account.py                    // 跑指定的用例文件
 pytest test_account.py::test_get_public_key              // 跑指定的用例文件中的指定用例
 pytest -v test_account.py                 // 跑指定的用例文件，展示详细信息
