@@ -314,4 +314,4 @@ def test_referrar(INSTANCE, cleartxpool):
     after =INSTANCE.rpc.get_objects([cybex.Account('nathan')['cashback_vb']])[0]['balance']['amount']
     vesting_after = INSTANCE.rpc.get_objects([dict(acc)['statistics']])[0]['pending_vested_fees']
     logging.info('balance before %s - after %s, vesting before %s - after %s', before, after, vesting_before, vesting_after)
-    assert after > before or vesting_after > vesting_before
+    assert int(after) > int(before) or int(vesting_after) > int(vesting_before)
