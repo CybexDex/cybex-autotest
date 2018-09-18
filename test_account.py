@@ -9,12 +9,14 @@ from bitshares.committee import Committee
 from bitshares.vesting import Vesting
 
 def test_get_public_key(INSTANCE, cleartxpool):
+    ''' cybex_rte_026 #1 '''
     account = INSTANCE.const['master_account']
     pubKey = INSTANCE.const['master_pubkey']
     a = cybex.Account(account)
     assert a['active']['key_auths'][0][0] == pubKey
 
 def test_createAccount(INSTANCE, cleartxpool):
+    ''' cybex_rte_001 '''
     ts = time.time()
     name = 'test' + str(int(ts))
     logging.info("account %s will be created", name)
@@ -22,6 +24,7 @@ def test_createAccount(INSTANCE, cleartxpool):
     logging.info("account %s created success",name)
 
 def test_createAccountFee(INSTANCE, cleartxpool):
+    ''' cybex_rte_001 '''
     ts = time.time()
     name = 'test' + str(int(ts))
     logging.info("The account %s will be created",name)
@@ -30,8 +33,6 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     assert create_account(INSTANCE, name)
     after = cybex.Account(acc).balance('CYB')
     delta = (before - after).amount
-    logging.info("Waiting for 15s ,tx need to send to chain")
-    time.sleep(15)
     logging.info("The fee of creating account is %s",delta)
     history = get_latest_history(INSTANCE.const['master_account'])
     fee = history['op'][1]['fee']['amount']
@@ -40,19 +41,23 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     assert delta*100000 == pytest.approx(fee, rel=0.1)
 
 def test_updateActiveKey(INSTANCE, cleartxpool):
+    ''' cybex_rte_002 '''
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
     key = 'CYB7PUaLmvY1Ee6YidhFBpDQ5x8kwDvgRFW1okytwVe4P7AD5oYVF'
-    logging.info("account %s will be created", name)
+    logging.info("account %s have been created", name)
     INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
     assert cybex.Account(name)['active']['key_auths'][0][0] != key
     update_active_key(INSTANCE, key, account=name)
     assert cybex.Account(name)['active']['key_auths'][0][0] == key
     logging.info("update then compare active key test passed")
+    warnings.warn("need to add steps to verify the new key are useful", UserWarning)
+    warnings.warn("need to verify for fee", UserWarning)
 
 def test_updateMemoKey(INSTANCE, cleartxpool):
+    ''' cybex_rte_002 '''
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     logging.info("account %s has been created", name)
@@ -64,8 +69,15 @@ def test_updateMemoKey(INSTANCE, cleartxpool):
     INSTANCE.update_memo_key(memo_key, cybex.Account(name))
     assert cybex.Account(name)['options']['memo_key'] == memo_key
     logging.info("update then compare memo key test passed")
+    warnings.warn("need to add steps to verify the new key are useful", UserWarning)
+    warnings.warn("need to verify for fee", UserWarning)
 
+def test_updateOwnerKey(INSTANCE, cleartxpool):
+    ''' cybex_rte_002 '''
+    warnings.warn("need to add test_updateOwnerKey", UserWarning)
+    
 def test_LTM(INSTANCE, cleartxpool):
+    ''' cybex_rte_003 '''
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     logging.info("account %s has been created", name)
@@ -76,8 +88,10 @@ def test_LTM(INSTANCE, cleartxpool):
     INSTANCE.transfer(name, 10000, 'CYB', '', 'nathan')
     INSTANCE.upgrade_account(account=cybex.Account(name))
     assert cybex.Account(name).is_ltm
+    warnings.warn("need to verify for fee", UserWarning)
 
 def test_LTM2(INSTANCE, cleartxpool):
+    ''' cybex_rte_028 '''
     # account does not have enough CYB to upgrade to LTM
     account = create_accounts(INSTANCE)[0]
     name = account['account']
@@ -92,6 +106,7 @@ def test_LTM2(INSTANCE, cleartxpool):
         INSTANCE.clear()
         
 def test_MiltiSig(INSTANCE, cleartxpool):
+    ''' cybex_rte_029 '''
     reset_wallet(INSTANCE)
     # create three new accounts, the first one is the multi-sig account
     # pdb.set_trace()
@@ -127,6 +142,7 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     INSTANCE.wallet.addPrivateKey(ownerKey1)
     logging.info("%s try to transfer 9 CYB to init0", name1)
     temp.transfer('init0', 9, "CYB", account=name1)
+    warnings.warn("need to change the account init0 to nathan, because maybe not exists init0 account in other chain", UserWarning)
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     left = amount - fee
     assert cybex.Account(name1).balance('CYB') == left
