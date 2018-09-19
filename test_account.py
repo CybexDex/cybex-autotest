@@ -34,6 +34,7 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     after = cybex.Account(acc).balance('CYB')
     delta = (before - after).amount
     logging.info("The fee of creating account is %s",delta)
+    time.sleep(15)
     history = get_latest_history(INSTANCE.const['master_account'])
     fee = history['op'][1]['fee']['amount']
     regName = history['op'][1]['name']
