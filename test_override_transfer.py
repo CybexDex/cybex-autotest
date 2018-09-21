@@ -12,7 +12,7 @@ def test_override_transfer(INSTANCE, cleartxpool):
     
     instance = INSTANCE
     reset_wallet(instance)
-    instance.wallet.removeAccount("nathan")
+#    instance.wallet.removeAccount("nathan")
     
     # create three account
     logging.info("create new accounts")
@@ -118,7 +118,7 @@ def test_override_transfer_test2(INSTANCE, cleartxpool):
     
     instance = INSTANCE
     reset_wallet(instance)
-    instance.wallet.removeAccount("nathan")
+#    instance.wallet.removeAccount("nathan")
     
     # create three account
     logging.info("create new accounts")
