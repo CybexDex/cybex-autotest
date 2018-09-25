@@ -43,39 +43,85 @@ def test_createAccountFee(INSTANCE, cleartxpool):
 
 def test_updateActiveKey(INSTANCE, cleartxpool):
     ''' cybex_rte_002 '''
+    reset_wallet(INSTANCE)
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
-    key = 'CYB7PUaLmvY1Ee6YidhFBpDQ5x8kwDvgRFW1okytwVe4P7AD5oYVF'
+    # key-pri pair
+    pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
+    key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
     logging.info("account %s have been created", name)
     INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
     assert cybex.Account(name)['active']['key_auths'][0][0] != key
+    before = cybex.Account(name).balance('CYB')
     update_active_key(INSTANCE, key, account=name)
-    assert cybex.Account(name)['active']['key_auths'][0][0] == key
+    after = cybex.Account(name).balance('CYB')
+    delta = before-after
+    updateAccFee = INSTANCE.fee[6]['fee']['fee']/100000
+    assert updateAccFee == pytest.approx(delta.amount, abs=1e-3)
     logging.info("update then compare active key test passed")
-    warnings.warn("need to add steps to verify the new key are useful", UserWarning)
-    warnings.warn("need to verify for fee", UserWarning)
+    assert cybex.Account(name)['active']['key_auths'][0][0] == key
+    INSTANCE.wallet.addPrivateKey('5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP')
+    INSTANCE.transfer('nathan', 0.00001, 'CYB', '', name)
 
 def test_updateMemoKey(INSTANCE, cleartxpool):
     ''' cybex_rte_002 '''
+    reset_wallet(INSTANCE)
     account = create_accounts(INSTANCE)[0]
+    # key-pri pair
+    pri = '5JjUFX7LRgXmRKtnEjvZxv23yKMotQnXveKxF6TAX5nR59DPxmn'
+    key = 'CYB8dpukfgAQRVPrADALovRnA6dj2b4izYnrHz4WCF1mK2aDr7aZv'
     name = account['account']
     logging.info("account %s has been created", name)
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
     INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
-    memo_key = 'CYB5YNK2Ujxk8k7Ysbp8Pk67KX47uxcnnML2BqKGbn1NE8hPEmZXV'
+    memo_key = key
     assert cybex.Account(name)['options']['memo_key'] != memo_key
+    before = cybex.Account(name).balance('CYB')
     INSTANCE.update_memo_key(memo_key, cybex.Account(name))
+    after = cybex.Account(name).balance('CYB')
+    delta = before-after
+    updateAccFee = INSTANCE.fee[6]['fee']['fee']/100000
+    assert updateAccFee == pytest.approx(delta.amount, abs=1e-3)
     assert cybex.Account(name)['options']['memo_key'] == memo_key
-    logging.info("update then compare memo key test passed")
-    warnings.warn("need to add steps to verify the new key are useful", UserWarning)
-    warnings.warn("need to verify for fee", UserWarning)
+    logging.info('transfer without memo pri key should work if user not input a memo')
+    INSTANCE.transfer(INSTANCE.const['master_account'], 0.00001, 'CYB', '', name)
+    try:
+        logging.info('transfer with memo pri key should fail since there is no pri key in wallet')
+        INSTANCE.transfer(INSTANCE.const['master_account'], 0.00001, 'CYB', 'a', name)
+        assert 0
+    except Exception as err:
+        assert 'No private key' in str(err)
+    INSTANCE.wallet.addPrivateKey(pri)
+    INSTANCE.transfer(INSTANCE.const['master_account'], 0.00001, 'CYB', 'a', name)
 
 def test_updateOwnerKey(INSTANCE, cleartxpool):
     ''' cybex_rte_002 '''
-    warnings.warn("need to add test_updateOwnerKey", UserWarning)
+    reset_wallet(INSTANCE)
+    account = create_accounts(INSTANCE)[0]
+    name = account['account']
+    ownerKey = account['owner']['wif_priv_key']
+    # need owner key to update an account's owner key
+    INSTANCE.wallet.addPrivateKey(ownerKey)
+    # key-pri pair
+    pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
+    key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
+    logging.info("account %s have been created", name)
+    INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
+    assert cybex.Account(name)['owner']['key_auths'][0][0] != key
+    before = cybex.Account(name).balance('CYB')
+    update_owner_keys(INSTANCE, key, account=name)
+    after = cybex.Account(name).balance('CYB')
+    delta = before-after
+    updateAccFee = INSTANCE.fee[6]['fee']['fee']/100000
+    assert updateAccFee == pytest.approx(delta.amount, abs=1e-3)
+    logging.info("update then compare owner key test passed")
+    assert cybex.Account(name)['owner']['key_auths'][0][0] == key
+    reset_wallet(INSTANCE)
+    INSTANCE.wallet.addPrivateKey(pri)
+    INSTANCE.transfer(INSTANCE.const['master_account'], 0.00001, 'CYB', '', name)
     
 def test_LTM(INSTANCE, cleartxpool):
     ''' cybex_rte_003 '''
@@ -87,9 +133,13 @@ def test_LTM(INSTANCE, cleartxpool):
     assert not cybex.Account(name).is_ltm
     # minimum fee to upgrade to LTM 
     INSTANCE.transfer(name, 10000, 'CYB', '', 'nathan')
+    before = cybex.Account(name).balance('CYB')
     INSTANCE.upgrade_account(account=cybex.Account(name))
+    after = cybex.Account(name).balance('CYB')
+    delta = before-after
+    updateLtmFee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
     assert cybex.Account(name).is_ltm
-    warnings.warn("need to verify for fee", UserWarning)
+    assert updateLtmFee == pytest.approx(delta.amount, abs=1e-3)
 
 def test_LTM2(INSTANCE, cleartxpool):
     ''' cybex_rte_028 '''
@@ -142,8 +192,7 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
     logging.info("%s try to transfer 9 CYB to init0", name1)
-    temp.transfer('init0', 9, "CYB", account=name1)
-    warnings.warn("need to change the account init0 to nathan, because maybe not exists init0 account in other chain", UserWarning)
+    temp.transfer(INSTANCE.const['master_account'], 9, "CYB", account=name1)
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     left = amount - fee
     assert cybex.Account(name1).balance('CYB') == left
