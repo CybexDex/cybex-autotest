@@ -329,9 +329,7 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     INSTANCE.disapproveproposal(id, account=name2)
     assert cybex.Account(name3).balance('CYB').amount == pytest.approx(amount-2*update_proposal_fee, abs=0.1)
 
-
 def test_createCommittee(INSTANCE, cleartxpool):
-    reset_wallet(INSTANCE)
     createdAccount = create_accounts(INSTANCE)[0]
     if createdAccount == False:
         logging.info('create account error')
@@ -345,22 +343,21 @@ def test_createCommittee(INSTANCE, cleartxpool):
     logging.info("%s is not a committee member at first", name)
     assert info == None
 
-    amount = 15000
-    INSTANCE.transfer(name, amount, 'CYB', '', 'nathan')
-    assert cybex.Account(name).balance('CYB') == amount
-    INSTANCE.upgrade_account(account=cybex.Account(name))
     # fee to update an account to LTM
-    fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
-    left = amount - fee
-    assert cybex.Account(name).balance('CYB') == left
+    ltm_fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
+    # fee to create a committee
+    committee_fee = INSTANCE.fee[29]['fee']['fee']/100000
+    amount = ltm_fee+committee_fee
+
+    INSTANCE.transfer(name, amount, 'CYB', '', 'nathan')
+    assert cybex.Account(name).balance('CYB').amount == amount
+    INSTANCE.upgrade_account(account=cybex.Account(name))
+    assert cybex.Account(name).balance('CYB').amount == amount-ltm_fee
     logging.info("upgrade %s to committee member", name)
     INSTANCE.create_committee_member(account=name)
-    # fee to create a committee
-    fee2 = INSTANCE.fee[29]['fee']['fee']/100000
-    leftover = amount - fee - fee2
-    assert cybex.Account(name).balance('CYB') == leftover
+    assert cybex.Account(name).balance('CYB').amount == amount-ltm_fee-committee_fee
     info = INSTANCE.rpc.get_committee_member_by_account(account["id"])
-    assert info != None      
+    assert info != None
 
 def test_referrar(INSTANCE, cleartxpool):
     logging.info('referrar test start')
