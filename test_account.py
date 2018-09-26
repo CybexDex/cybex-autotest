@@ -274,6 +274,7 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
 
 def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     # disapprove a multi-sig
+    reset_wallet(INSTANCE)
     # create three new accounts, the first one is the multi-sig account
     accounts = create_accounts(INSTANCE, num=3)
     if accounts == False:
@@ -311,11 +312,9 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
 
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
-    logging.info("%s try to transfer 9 CYB to init0", name1)
-    temp.transfer('init0', 9, "CYB", account=name1)
-    fee = INSTANCE.fee[0]['fee']['fee']/100000
-    left = amount - fee
-    assert cybex.Account(name1).balance('CYB') == left
+    logging.info("%s try to transfer %f CYB to %s", name1, to_amount, INSTANCE.chain['master_account'])
+    temp.transfer(INSTANCE.chain['master_account'], to_amount, "CYB", account=name1)
+    assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount - create_proposal_fee, abs=0.1)
     # to do, remove a proposals
     id = cybex.Account(name1).proposals[0]['id']
 
@@ -323,13 +322,13 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     INSTANCE.wallet.addPrivateKey(activeKey2)
     # disapprove propsal should cost fee
     logging.info("%s approve propsal %s first", name2, id)
-    assert cybex.Account(name2).balance('CYB') == amount
+    assert cybex.Account(name2).balance('CYB').amount == amount
     INSTANCE.approveproposal(id, account=name2)
-    assert cybex.Account(name2).balance('CYB') == left
+    assert cybex.Account(name2).balance('CYB').amount  == pytest.approx(amount - update_proposal_fee, abs=0.1)
     logging.info("%s remove previous approve propsal %s", name2, id)
     INSTANCE.disapproveproposal(id, account=name2)
-    leftover = amount - 2*fee
-    assert cybex.Account(name2).balance('CYB') == leftover
+    assert cybex.Account(name3).balance('CYB').amount == pytest.approx(amount-2*update_proposal_fee, abs=0.1)
+
 
 def test_createCommittee(INSTANCE, cleartxpool):
     reset_wallet(INSTANCE)
