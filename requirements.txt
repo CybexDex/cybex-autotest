@@ -30,7 +30,7 @@ py==1.6.0
 pyannotate==1.0.6
 pycrypto==2.6.1
 pycryptodome==3.6.6
-PyCybex==1.0.3
+PyCybex==1.0.4
 pylibscrypt==1.7.1
 pylint==2.1.1
 pytest==3.7.4

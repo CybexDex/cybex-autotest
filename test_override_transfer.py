@@ -25,10 +25,10 @@ def test_override_transfer(INSTANCE, cleartxpool):
     accountName1 = accounts[0]['account']
     accountName2 = accounts[1]['account']
     accountName3 = accounts[2]['account']
-    account1 = cybex.Account(accountName1)
+    account1 = cybex.Account(accountName1, cybex_instance=instance)
     accountId1 = dict(account1)['id']
-    account2 = cybex.Account(accountName2)
-    account3 = cybex.Account(accountName3)
+    account2 = cybex.Account(accountName2, cybex_instance=instance)
+    account3 = cybex.Account(accountName3, cybex_instance=instance)
     
     # unlock wallet and add private key
     activeKey1 = accounts[0]['active']['wif_priv_key']
@@ -37,24 +37,24 @@ def test_override_transfer(INSTANCE, cleartxpool):
     assert instance.wallet.unlocked()
     instance.wallet.addPrivateKey(activeKey1)
 
-    # transfer 100000 CYB to account1 from nathan
+    # transfer 5 CYB to account1 from nathan
     acc = instance.const['master_account']
-    valu = 1000
+    valu = 5 
     instance.transfer(accountName1, valu, 'CYB', '', acc)
-    logging.info("transfer %s CYB from %s to %s" % (valu, acc, accountName1))
+    logging.info("transfer %s CYB from %s to %s" % (valu, acc, account1))
     account1.refresh() 
     assert int(account1.balances[0]) == valu * 10 ** account1.balances[0].asset.precision
 
     # upgrade account1 to lifetime number
-    logging.info("upgrade account1 to lifetime number")
+    logging.info("upgrade %s to lifetime number" % (account1))
     instance.upgrade_account(account=account1)
     account1.refresh()
     ac1 = dict(account1)
     assert ac1['registrar'] == ac1['referrer'] == ac1['lifetime_referrer'] == ac1['id']
 
     # create asset
-    logging.info(" %s create asset" % (account1))
     symbol = genSymbol() 
+    logging.info(" %s create asset %s" % (account1, symbol))
     precision = 5
     max_supply = 1000
     core_exchange_rate = 200
@@ -62,11 +62,11 @@ def test_override_transfer(INSTANCE, cleartxpool):
 #    logging.info(ass)
     account1.refresh()
     logging.info(account1.balances)
-    assert cybex.Asset(symbol)['symbol'] == symbol
-    assert cybex.Asset(symbol)['precision'] == precision
-    assert cybex.Asset(symbol)['issuer'] == accountId1
-    assert cybex.Asset(symbol)['options']['issuer_permissions'] == 79
-    assert cybex.Asset(symbol)['options']['max_supply'] == max_supply * 10 ** precision 
+    assert cybex.Asset(symbol, cybex_instance=instance)['symbol'] == symbol
+    assert cybex.Asset(symbol, cybex_instance=instance)['precision'] == precision
+    assert cybex.Asset(symbol, cybex_instance=instance)['issuer'] == accountId1
+    assert cybex.Asset(symbol, cybex_instance=instance)['options']['issuer_permissions'] == 79
+    assert cybex.Asset(symbol, cybex_instance=instance)['options']['max_supply'] == max_supply * 10 ** precision 
 
     # issue asset
     logging.info("issue all asset from %s to %s" % (account1, account2))
@@ -86,6 +86,7 @@ def test_override_transfer(INSTANCE, cleartxpool):
         assert 0
     except Exception as err:
         instance.clear()
+        logging.info(err)
         pass
 
     logging.info("override transfer %s asset from %s to %s by %s" % (over_amount, account2, account3, account2)) 
@@ -131,10 +132,10 @@ def test_override_transfer_test2(INSTANCE, cleartxpool):
     accountName1 = accounts[0]['account']
     accountName2 = accounts[1]['account']
     accountName3 = accounts[2]['account']
-    account1 = cybex.Account(accountName1)
+    account1 = cybex.Account(accountName1, cybex_instance=instance)
     accountId1 = dict(account1)['id']
-    account2 = cybex.Account(accountName2)
-    account3 = cybex.Account(accountName3)
+    account2 = cybex.Account(accountName2, cybex_instance=instance)
+    account3 = cybex.Account(accountName3, cybex_instance=instance)
     
     # unlock wallet and add private key
     activeKey1 = accounts[0]['active']['wif_priv_key']
@@ -143,24 +144,24 @@ def test_override_transfer_test2(INSTANCE, cleartxpool):
     assert instance.wallet.unlocked()
     instance.wallet.addPrivateKey(activeKey1)
 
-    # transfer 100000 CYB to account1 from nathan
+    # transfer 5 CYB to account1 from nathan
     acc = instance.const['master_account']
-    valu = 1000
+    valu = 5 
     instance.transfer(accountName1, valu, 'CYB', '', acc)
-    logging.info("transfer %s CYB from %s to %s" % (valu, acc, accountName1))
+    logging.info("transfer %s CYB from %s to %s" % (valu, acc, account1))
     account1.refresh() 
     assert int(account1.balances[0]) == valu * 10 ** account1.balances[0].asset.precision
 
     # upgrade account1 to lifetime number
-    logging.info("upgrade account1 to lifetime number")
+    logging.info("upgrade %s to lifetime number" % (account1))
     instance.upgrade_account(account=account1)
     account1.refresh()
     ac1 = dict(account1)
     assert ac1['registrar'] == ac1['referrer'] == ac1['lifetime_referrer'] == ac1['id']
 
     # create asset
-    logging.info(" %s create asset" % (account1))
     symbol = genSymbol() 
+    logging.info(" %s create asset %s" % (account1, symbol))
     precision = 5
     max_supply = 1000
     core_exchange_rate = 200
@@ -168,11 +169,11 @@ def test_override_transfer_test2(INSTANCE, cleartxpool):
 #    logging.info(ass)
     account1.refresh()
     logging.info(account1.balances)
-    assert cybex.Asset(symbol)['symbol'] == symbol
-    assert cybex.Asset(symbol)['precision'] == precision
-    assert cybex.Asset(symbol)['issuer'] == accountId1
-    assert cybex.Asset(symbol)['options']['issuer_permissions'] == 79
-    assert cybex.Asset(symbol)['options']['max_supply'] == max_supply * 10 ** precision 
+    assert cybex.Asset(symbol, cybex_instance=instance)['symbol'] == symbol
+    assert cybex.Asset(symbol, cybex_instance=instance)['precision'] == precision
+    assert cybex.Asset(symbol, cybex_instance=instance)['issuer'] == accountId1
+    assert cybex.Asset(symbol, cybex_instance=instance)['options']['issuer_permissions'] == 79
+    assert cybex.Asset(symbol, cybex_instance=instance)['options']['max_supply'] == max_supply * 10 ** precision 
 
     # issue asset
     logging.info("issue all asset from %s to %s" % (account1, account2))
