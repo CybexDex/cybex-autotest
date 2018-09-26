@@ -51,7 +51,7 @@ def test_updateActiveKey(INSTANCE, cleartxpool):
     pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
     key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
     logging.info("account %s have been created", name)
-    INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
+    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
     assert cybex.Account(name)['active']['key_auths'][0][0] != key
     before = cybex.Account(name).balance('CYB')
     update_active_key(INSTANCE, key, account=name)
@@ -75,7 +75,7 @@ def test_updateMemoKey(INSTANCE, cleartxpool):
     logging.info("account %s has been created", name)
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
-    INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
+    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
     memo_key = key
     assert cybex.Account(name)['options']['memo_key'] != memo_key
     before = cybex.Account(name).balance('CYB')
@@ -108,7 +108,7 @@ def test_updateOwnerKey(INSTANCE, cleartxpool):
     pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
     key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
     logging.info("account %s have been created", name)
-    INSTANCE.transfer(name, 30, 'CYB', '', 'nathan')
+    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
     assert cybex.Account(name)['owner']['key_auths'][0][0] != key
     before = cybex.Account(name).balance('CYB')
     update_owner_keys(INSTANCE, key, account=name)
@@ -131,14 +131,14 @@ def test_LTM(INSTANCE, cleartxpool):
     INSTANCE.wallet.addPrivateKey(activeKey)
     assert not cybex.Account(name).is_ltm
     # minimum fee to upgrade to LTM 
-    INSTANCE.transfer(name, 10000, 'CYB', '', 'nathan')
+    ltm_fee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
+    INSTANCE.transfer(name, ltm_fee, 'CYB', '', 'nathan')
     before = cybex.Account(name).balance('CYB')
     INSTANCE.upgrade_account(account=cybex.Account(name))
     after = cybex.Account(name).balance('CYB')
     delta = before-after
-    updateLtmFee = INSTANCE.fee[8]['fee']['membership_lifetime_fee']/100000
     assert cybex.Account(name).is_ltm
-    assert updateLtmFee == pytest.approx(delta.amount, abs=1e-3)
+    assert ltm_fee == pytest.approx(delta.amount, abs=1e-3)
 
 def test_LTM2(INSTANCE, cleartxpool):
     ''' cybex_rte_028 '''
@@ -177,8 +177,8 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     assert cybex.Account(name1).balance('CYB') == 0
     assert cybex.Account(name1)['active']['weight_threshold'] == 2
     
-    amount = 100
-    to_amount = 9
+    amount = 10
+    to_amount = 1
     create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
     update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
     transfer_fee = INSTANCE.fee[0]['fee']['fee']/100000
@@ -236,8 +236,8 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     assert cybex.Account(name1).balance('CYB') == 0
     assert cybex.Account(name1)['active']['weight_threshold'] == 3
     
-    amount = 100
-    to_amount = 9
+    amount = 10
+    to_amount = 1
     create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
     update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
 
@@ -295,8 +295,8 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     assert cybex.Account(name1).balance('CYB') == 0
     assert cybex.Account(name1)['active']['weight_threshold'] == 2
     
-    amount = 100
-    to_amount = 9
+    amount = 10
+    to_amount = 1
     create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
     update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
     delete_proposal_fee = INSTANCE.fee[24]['fee']['fee']/100000
@@ -357,7 +357,7 @@ def test_createCommittee(INSTANCE, cleartxpool):
     INSTANCE.create_committee_member(account=name)
     assert cybex.Account(name).balance('CYB').amount == amount-ltm_fee-committee_fee
     info = INSTANCE.rpc.get_committee_member_by_account(account["id"])
-    assert info != None
+    assert info != None      
 
 def test_referrar(INSTANCE, cleartxpool):
     logging.info('referrar test start')

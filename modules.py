@@ -289,6 +289,14 @@ def create_accounts(inst, num=1):
             logging.error('create account error ,because %s', err)
             return False
         out.append({'account': account, 'owner': owner, 'active': active})
+    if len(out) > 0:
+        fid = open('accounts.csv', 'a')
+        for i in range(len(out)):
+            line = out[i]['account']+','+out[i]['owner']['wif_priv_key']+','+out[i]['owner']['pub_key']+','+out[i]['owner']['brain_priv_key']+','+out[i]['active']['wif_priv_key']+','+out[i]['active']['pub_key']+','+out[i]['active']['brain_priv_key']+',\n'
+            fid.write(line)
+        fid.close()
+    else:
+        raise Exception("create account failed")
     return out
 
 def create_asset(inst, precision=5, max_supply=100000000, core_exchange_rate=2000):
