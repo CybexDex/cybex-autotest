@@ -222,7 +222,7 @@ def reset_wallet(inst):
     for acc in inst.wallet.getAccounts():
         inst.wallet.removeAccount(acc['name'])
     # add master account key
-    inst.wallet.addPrivateKey('5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3')
+    inst.wallet.addPrivateKey(inst.chain['master_privkey'])
 
 def genSymbol():
     code = ''
