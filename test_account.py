@@ -22,7 +22,7 @@ def test_createAccount(INSTANCE, cleartxpool):
     logging.info("account %s will be created", name)
     assert create_account(INSTANCE, name)
     logging.info("account %s created success",name)
-
+@pytest.mark.skip(reason="account history is not stable for rte")
 def test_createAccountFee(INSTANCE, cleartxpool):
     ''' cybex_rte_001 '''
     ts = time.time()
@@ -34,7 +34,7 @@ def test_createAccountFee(INSTANCE, cleartxpool):
     after = cybex.Account(acc).balance('CYB')
     delta = (before - after).amount
     logging.info("The fee of creating account is %s",delta)
-    time.sleep(15)
+    time.sleep(60)
     history = get_latest_history(INSTANCE.const['master_account'])
     fee = history['op'][1]['fee']['amount']
     regName = history['op'][1]['name']
@@ -43,7 +43,6 @@ def test_createAccountFee(INSTANCE, cleartxpool):
 
 def test_updateActiveKey(INSTANCE, cleartxpool):
     ''' cybex_rte_002 '''
-    reset_wallet(INSTANCE)
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     activeKey = account['active']['wif_priv_key']
@@ -158,9 +157,7 @@ def test_LTM2(INSTANCE, cleartxpool):
         
 def test_MiltiSig(INSTANCE, cleartxpool):
     ''' cybex_rte_029 '''
-    reset_wallet(INSTANCE)
     # create three new accounts, the first one is the multi-sig account
-    # pdb.set_trace()
     accounts = create_accounts(INSTANCE, num=3)
     if accounts == False:
         logging.info('create account error')
@@ -181,6 +178,11 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     assert cybex.Account(name1)['active']['weight_threshold'] == 2
     
     amount = 100
+    to_amount = 9
+    create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
+    update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
+    transfer_fee = INSTANCE.fee[0]['fee']['fee']/100000
+
     INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')
@@ -191,11 +193,10 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
-    logging.info("%s try to transfer 9 CYB to init0", name1)
-    temp.transfer(INSTANCE.const['master_account'], 9, "CYB", account=name1)
-    fee = INSTANCE.fee[0]['fee']['fee']/100000
-    left = amount - fee
-    assert cybex.Account(name1).balance('CYB') == left
+    logging.info("%s try to transfer %f CYB to init0", name1, to_amount)
+    temp.transfer(INSTANCE.const['master_account'], to_amount, "CYB", account=name1)
+    logging.info("create proposal fee %f", create_proposal_fee)
+    assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount - create_proposal_fee, abs=0.1)
     # to do, remove a proposals
     id = cybex.Account(name1).proposals[0]['id']
     # need active key to approve a multi-sig
@@ -205,18 +206,16 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     # approve propsal should cost fee
     logging.info("%s accept the propsal", name2)
     INSTANCE.approveproposal(id, appprover=name2, account=name2)
-    assert cybex.Account(name2).balance('CYB') == left
+    assert cybex.Account(name2).balance('CYB').amount == pytest.approx(amount-update_proposal_fee, abs=0.1)
     logging.info("%s accept the propsal", name3)
     INSTANCE.approveproposal(id, appprover=name3, account=name3)
-    assert cybex.Account(name3).balance('CYB') == left
+    assert cybex.Account(name3).balance('CYB').amount == pytest.approx(amount-update_proposal_fee, abs=0.1)
     # satisfy muti-sig, token transferred
     assert len(cybex.Account(name1).proposals) == 0
-    leftover = amount - 2*fee - 9
-    assert cybex.Account(name1).balance('CYB') == leftover
+    assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount-create_proposal_fee-transfer_fee-9, abs=0.1)
 
 def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     # fail for no enough signer, 3/3
-    reset_wallet(INSTANCE)
     # create three new accounts, the first one is the multi-sig account
     accounts = create_accounts(INSTANCE, num=3)
     if accounts == False:
@@ -238,21 +237,24 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     assert cybex.Account(name1)['active']['weight_threshold'] == 3
     
     amount = 100
+    to_amount = 9
+    create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
+    update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
+
     INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
-    cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
+    cybex.cybex.cybex_debug_config(INSTANCE.chain['chain_id'])
     if temp.wallet.locked():
         temp.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     
     # need private key to fire a multi-sig transanction
     INSTANCE.wallet.addPrivateKey(ownerKey1)
-    logging.info("%s try to transfer 9 CYB to init0", name1)
-    temp.transfer('init0', 9, "CYB", account=name1)
-    fee = INSTANCE.fee[0]['fee']['fee']/100000
-    left = amount - fee
-    assert cybex.Account(name1).balance('CYB') == left
+    logging.info("%s try to transfer %f CYB to %s", name1, to_amount, INSTANCE.chain['master_account'])
+    temp.transfer(INSTANCE.chain['master_account'], to_amount, "CYB", account=name1)
+    assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount - create_proposal_fee, abs=0.1)
+
     # to do, remove a proposals
     id = cybex.Account(name1).proposals[0]['id']
     # need active key to approve a multi-sig
@@ -262,17 +264,16 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     # approve propsal should cost fee
     logging.info("%s accept the propsal", name2)
     INSTANCE.approveproposal(id, appprover=name2, account=name2)
-    assert cybex.Account(name2).balance('CYB') == left
+    assert cybex.Account(name2).balance('CYB').amount == pytest.approx(amount-update_proposal_fee, abs=0.1)
     logging.info("%s accept the propsal", name3)
     INSTANCE.approveproposal(id, appprover=name3, account=name3)
-    assert cybex.Account(name3).balance('CYB') == left
+    assert cybex.Account(name3).balance('CYB').amount == pytest.approx(amount-update_proposal_fee, abs=0.1)
     # satisfy muti-sig, token transferred
     assert len(cybex.Account(name1).proposals) == 1
-    assert cybex.Account(name1).balance('CYB') == left
+    assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount-create_proposal_fee, abs=0.1)
 
 def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     # disapprove a multi-sig
-    reset_wallet(INSTANCE)
     # create three new accounts, the first one is the multi-sig account
     accounts = create_accounts(INSTANCE, num=3)
     if accounts == False:
@@ -294,6 +295,12 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     assert cybex.Account(name1)['active']['weight_threshold'] == 2
     
     amount = 100
+    to_amount = 9
+    create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
+    update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
+    delete_proposal_fee = INSTANCE.fee[24]['fee']['fee']/100000
+    transfer_fee = INSTANCE.fee[0]['fee']['fee']/100000
+
     INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
     INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')

@@ -93,5 +93,7 @@ def data4cybexop(INSTANCE):
 @pytest.fixture(scope='function')
 def cleartxpool(INSTANCE):
     INSTANCE.clear()
+    reset_wallet(INSTANCE)
     yield
     INSTANCE.clear()
+    reset_wallet(INSTANCE)
