@@ -7,7 +7,7 @@ Project: test override transfer
 
 from modules import *
 
-
+@pytest.mark.skip(reason="skip to save money in nathan")
 def test_override_transfer(INSTANCE, cleartxpool):
     
     instance = INSTANCE
@@ -113,7 +113,7 @@ def test_override_transfer(INSTANCE, cleartxpool):
 
 
 
-
+@pytest.mark.skip(reason="skip to save money in nathan")
 def test_override_transfer_test2(INSTANCE, cleartxpool):
     
     instance = INSTANCE

@@ -305,7 +305,7 @@ def test_multiSig4(INSTANCE, cleartxpool):
     info = INSTANCE.rpc.get_committee_member_by_account(account["id"])
     logging.info("%s is not a committee member at first", name1)
     assert info == None
-    amount = 15000
+    amount = 1030
     INSTANCE.transfer(name1, amount, 'CYB', '', 'nathan')
     assert cybex.Account(name1).balance('CYB') == amount
     INSTANCE.upgrade_account(account=cybex.Account(name1))

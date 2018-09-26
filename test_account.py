@@ -122,6 +122,7 @@ def test_updateOwnerKey(INSTANCE, cleartxpool):
     INSTANCE.wallet.addPrivateKey(pri)
     INSTANCE.transfer(INSTANCE.const['master_account'], 0.00001, 'CYB', '', name)
     
+@pytest.mark.skip(reason="skip to save money in nathan")
 def test_LTM(INSTANCE, cleartxpool):
     ''' cybex_rte_003 '''
     account = create_accounts(INSTANCE)[0]
@@ -329,6 +330,7 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     INSTANCE.disapproveproposal(id, account=name2)
     assert cybex.Account(name3).balance('CYB').amount == pytest.approx(amount-2*update_proposal_fee, abs=0.1)
 
+@pytest.mark.skip(reason="skip to save money in nathan")
 def test_createCommittee(INSTANCE, cleartxpool):
     createdAccount = create_accounts(INSTANCE)[0]
     if createdAccount == False:
@@ -359,6 +361,7 @@ def test_createCommittee(INSTANCE, cleartxpool):
     info = INSTANCE.rpc.get_committee_member_by_account(account["id"])
     assert info != None      
 
+@pytest.mark.skip(reason="skip to save money in nathan")
 def test_referrar(INSTANCE, cleartxpool):
     logging.info('referrar test start')
     reset_wallet(INSTANCE)
