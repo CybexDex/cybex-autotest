@@ -187,6 +187,18 @@ def update_active_key(inst, key, account=None, **kwargs):
     })
     return inst.finalizeOp(op, account["name"], "active", **kwargs)
 
+def update_owner_key(inst, key, account=None, **kwargs):
+    btsAccount.PublicKey(key, prefix='CYB')
+    account = cybex.Account(account)
+    account["owner"] = {'weight_threshold': 1, 'account_auths': [], 'key_auths': [[key, 1]], 'address_auths': []}
+    op = operations.Account_update(**{
+        "fee": {"amount": 0, "asset_id": "1.3.0"},
+        "account": account["id"],
+        "owner": account["owner"],
+        "extensions": {}
+    })
+    return inst.finalizeOp(op, account["name"], "active", **kwargs)
+
 def update_owner_keys(inst, obj, account=None, **kwargs):
     # for testing multi-Sig
     # need fee to update active keys
@@ -345,6 +357,9 @@ def cancel_vesting(INSTANCE, id, acc):
 
 
 def transfer_to_name(INSTANCE, from_acc, to_acc, asset_sym, value):
+    activeKey = from_acc['active']['wif_priv_key']
+    INSTANCE.wallet.addPrivateKey(activeKey)
+    # assert 0
     try:
         INSTANCE.transfer(
             to_acc['account'],
