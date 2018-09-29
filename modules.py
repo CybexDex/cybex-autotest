@@ -357,8 +357,6 @@ def cancel_vesting(INSTANCE, id, acc):
 
 
 def transfer_to_name(INSTANCE, from_acc, to_acc, asset_sym, value):
-    activeKey = from_acc['active']['wif_priv_key']
-    INSTANCE.wallet.addPrivateKey(activeKey)
     # assert 0
     try:
         INSTANCE.transfer(
