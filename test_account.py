@@ -125,6 +125,7 @@ def test_updateOwnerKey(INSTANCE, cleartxpool):
 @pytest.mark.skip(reason="skip to save money in nathan")
 def test_LTM(INSTANCE, cleartxpool):
     ''' cybex_rte_003 '''
+    reset_wallet(INSTANCE)
     account = create_accounts(INSTANCE)[0]
     name = account['account']
     logging.info("account %s has been created", name)
@@ -143,6 +144,7 @@ def test_LTM(INSTANCE, cleartxpool):
 
 def test_LTM2(INSTANCE, cleartxpool):
     ''' cybex_rte_028 '''
+    reset_wallet(INSTANCE)
     # account does not have enough CYB to upgrade to LTM
     account = create_accounts(INSTANCE)[0]
     name = account['account']
@@ -159,6 +161,7 @@ def test_LTM2(INSTANCE, cleartxpool):
 def test_MiltiSig(INSTANCE, cleartxpool):
     ''' cybex_rte_029 '''
     # create three new accounts, the first one is the multi-sig account
+    reset_wallet(INSTANCE)
     accounts = create_accounts(INSTANCE, num=3)
     if accounts == False:
         logging.info('create account error')
@@ -216,6 +219,7 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     assert cybex.Account(name1).balance('CYB').amount == pytest.approx(amount-create_proposal_fee-transfer_fee-9, abs=0.1)
 
 def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
+    reset_wallet(INSTANCE)
     # fail for no enough signer, 3/3
     # create three new accounts, the first one is the multi-sig account
     accounts = create_accounts(INSTANCE, num=3)
@@ -332,6 +336,7 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
 
 @pytest.mark.skip(reason="skip to save money in nathan")
 def test_createCommittee(INSTANCE, cleartxpool):
+    reset_wallet(INSTANCE)
     createdAccount = create_accounts(INSTANCE)[0]
     if createdAccount == False:
         logging.info('create account error')
