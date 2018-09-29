@@ -7,7 +7,7 @@ Project: test whitelist uia
 
 from modules import *
 
-
+@pytest.mark.skip(reason="ltm fee too high for rte")
 def test_issue_whitelist_uia(INSTANCE, cleartxpool):
     
     instance = INSTANCE
@@ -117,7 +117,7 @@ def test_issue_whitelist_uia(INSTANCE, cleartxpool):
 
 
 
-
+@pytest.mark.skip(reason="ltm fee too high for rte")
 def test_transfer_whitelist_blacklist_uia(INSTANCE, cleartxpool):
     
     instance = INSTANCE
@@ -257,7 +257,7 @@ def test_transfer_whitelist_blacklist_uia(INSTANCE, cleartxpool):
 
 
 
-
+@pytest.mark.skip(reason="ltm fee too high for rte")
 def test_transfer_restricted(INSTANCE, cleartxpool):
     
     instance = INSTANCE

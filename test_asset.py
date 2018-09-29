@@ -26,8 +26,8 @@ def test_createAsset(INSTANCE, cleartxpool):
     INSTANCE.issue_asset('nathan', max_supply, symbol, account='nathan')
     assert cybex.Account('nathan').balance(symbol) == max_supply
     # do a transfer
-    INSTANCE.transfer('init0', 1, symbol, '', 'nathan')
-    assert cybex.Account('init0').balance(symbol) == 1
+    INSTANCE.transfer('null-account', 1, symbol, '', 'nathan')
+    assert cybex.Account('null-account').balance(symbol) == 1
     # check fee
     dynamic_asset_data_id = cybex.Asset(symbol)['dynamic_asset_data_id']
     pool = INSTANCE.rpc.get_objects([dynamic_asset_data_id])[0]
@@ -75,10 +75,10 @@ def test_haltAsset(INSTANCE, cleartxpool):
     INSTANCE.create_asset(symbol, precision, max_supply, {symbol: 1, 'CYB': core_exchange_rate}, 'description', account='nathan')
     INSTANCE.issue_asset('nathan', max_supply, symbol, account='nathan')
     assert cybex.Account('nathan').balance(symbol) == max_supply
-    INSTANCE.transfer('init0', 1, symbol, '', 'nathan')
+    INSTANCE.transfer('null-account', 1, symbol, '', 'nathan')
     assert cybex.Account('nathan').balance(symbol) == max_supply-1
     cybex.Asset(symbol, cybex_instance=INSTANCE).halt()
     try:
-        INSTANCE.transfer('init0', 2, symbol, '', 'nathan')
+        INSTANCE.transfer('null-account', 2, symbol, '', 'nathan')
     except Exception as err:
         assert 'is not whitelisted' in str(err)

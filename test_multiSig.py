@@ -54,8 +54,8 @@ def test_multiSig1(INSTANCE, cleartxpool):
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey1)
     INSTANCE.wallet.addPrivateKey(activeKey2)
-    logging.debug("%s try to transfer 1 CYB to init0", name3)
-    temp.transfer('init0', 1, "CYB", account=name3)
+    logging.debug("%s try to transfer 1 CYB to nathan", name3)
+    temp.transfer('nathan', 1, "CYB", account=name3)
 
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     assert cybex.Account(name3).balance('CYB') == amount-fee
@@ -127,8 +127,8 @@ def test_multiSig2(INSTANCE, cleartxpool):
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey1)
     INSTANCE.wallet.addPrivateKey(activeKey2)
-    logging.debug("%s try to transfer 1 CYB to init0", name3)
-    temp.transfer('init0', 1, "CYB", account=name3)
+    logging.debug("%s try to transfer 1 CYB to nathan", name3)
+    temp.transfer('nathan', 1, "CYB", account=name3)
 
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     assert cybex.Account(name3).balance('CYB') == amount-fee
@@ -232,16 +232,16 @@ def test_multiSig3(INSTANCE, cleartxpool):
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey2)
     INSTANCE.wallet.addPrivateKey(activeKey3)
-    logging.debug("%s try to transfer 1 CYB to init0", name4)
+    logging.debug("%s try to transfer 1 CYB to nathan", name4)
     try:
-        temp.transfer('init0', 1, "CYB", account=name4)
+        temp.transfer('nathan', 1, "CYB", account=name4)
     except Exception as err:
         assert 'Missing Active Authority' in str(err)
 
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey1)
     INSTANCE.wallet.addPrivateKey(activeKey3)
-    temp.transfer('init0', 1, "CYB", account=name4)
+    temp.transfer('nathan', 1, "CYB", account=name4)
 
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     assert cybex.Account(name4).balance('CYB') == amount-fee
@@ -333,16 +333,16 @@ def test_multiSig4(INSTANCE, cleartxpool):
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey2)
     INSTANCE.wallet.addPrivateKey(activeKey3)
-    logging.debug("%s try to transfer 1 CYB to init0", name4)
+    logging.debug("%s try to transfer 1 CYB to nathan", name4)
     try:
-        temp.transfer('init0', 1, "CYB", account=name4)
+        temp.transfer('nathan', 1, "CYB", account=name4)
     except Exception as err:
         assert 'Missing Active Authority' in str(err)
 
     reset_wallet(INSTANCE)
     INSTANCE.wallet.addPrivateKey(activeKey1)
     INSTANCE.wallet.addPrivateKey(activeKey3)
-    temp.transfer('init0', 1, "CYB", account=name4)
+    temp.transfer('nathan', 1, "CYB", account=name4)
 
     fee = INSTANCE.fee[0]['fee']['fee']/100000
     assert cybex.Account(name4).balance('CYB') == amount-fee

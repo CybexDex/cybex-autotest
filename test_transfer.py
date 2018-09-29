@@ -36,7 +36,7 @@ def test_transferWithNoKey(INSTANCE, cleartxpool):
     assert cybex.Account(name).balance('CYB') == 0
     try:
         # below line will result in an error since there is no active key in wallet
-        INSTANCE.transfer('init0', 1, 'CYB', '', name)
+        INSTANCE.transfer('nathan', 1, 'CYB', '', name)
         # cannot track error here (err=null), dirty workaround
         assert 0
     except Exception as err:
@@ -55,7 +55,7 @@ def test_transferWithNoBalance(INSTANCE, cleartxpool):
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
     try:
-        INSTANCE.transfer('init0', 1, 'CYB', '', name)
+        INSTANCE.transfer('nathan', 1, 'CYB', '', name)
     except Exception as err:
         assert 'Insufficient Balance' in str(err)
     try:
