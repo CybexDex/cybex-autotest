@@ -15,6 +15,7 @@ import json
 import random
 import warnings
 import pdb
+import requests
 
 # name = time.strftime("%Y%m%d-%H%M%S",time.localtime(time.time()))
 # LOG=logging.getLogger(name)
@@ -550,3 +551,13 @@ def assert4rte(inst, exp, errinfo="[default]assert result is false"):
         except Exception as err:
             logging.info(err)
             return False
+
+def dumpRTE(table, filter, limit=100):
+    url = "http://210.3.74.58:5000/api/rdb"
+    payload = "dump -t {} -f {} -l {}".format(table, filter, limit)
+    data = {'query': payload}
+    r = requests.post(url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
+    if r.status_code==200:
+        return r.json()[0]['val'][0]['table']
+    else:
+        raise Exception('server error')
