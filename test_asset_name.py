@@ -2,7 +2,7 @@
 '''
 Created on 2018-10-8
 @author: holly
-Project: test whitelist uia 
+Project: test asset name 
 '''
 
 from  modules import *
