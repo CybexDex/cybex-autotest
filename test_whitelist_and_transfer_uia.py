@@ -348,7 +348,7 @@ def test_transfer_restricted(INSTANCE, cleartxpool):
         logging.info(err)
         pass
     
-    # transfer asset from account2 to account3
+    # transfer asset from account2 to account1
     logging.info('transfer asset %s from %s to %s after set transfer_restricted flags' % (symbol, account2, account1))
     instance.transfer(accountName1, trf_valu, symbol, '', accountName2)
     account1.refresh()
