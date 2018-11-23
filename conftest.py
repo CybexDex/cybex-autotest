@@ -17,7 +17,7 @@ def INSTANCE(pytestconfig):
     instance.notcheckrte = pytestconfig.getoption('notcheckrte')
     fees = instance.rpc.get_global_properties([])['parameters']['current_fees']['parameters']
     ops = cybex.cybex.intercept_bitshares.cybex_ops
-    instance.fee = [{'id': fees[i][0], 'op': ops[i], 'fee': fees[i][1]} for i in range(len(fees))]
+    instance.fee = [{'id': fees[i][0], 'op': ops[i], 'fee': fees[i][1]} for i in range(len(ops))]
     logging.info(instance.const)
     return instance
 
