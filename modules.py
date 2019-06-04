@@ -80,7 +80,7 @@ def create_account(inst, name,
     if inst.wallet.locked():
         inst.wallet.unlock(CFG['wallet']['test_wallet_pwd'])
     try:
-        ## private key of nathan, which is the referrer
+        ## private key of faucet, which is the referrer
         inst.wallet.addPrivateKey(inst.const['master_privkey'])
     except Exception as e:
         pass
@@ -90,7 +90,7 @@ def create_account(inst, name,
         'owner': owner,
         'active': active
     }
-    account = cybex.Account('nathan')
+    account = cybex.Account(inst.const['master_account'])
     owner_key_authority = [[toRegister["owner"], 1]]
     active_key_authority = [[toRegister["active"], 1]]
     owner_accounts_authority = []
@@ -135,12 +135,12 @@ def create_buyback_account(name, asset, buyback_markets):
     if inst.wallet.locked():
         inst.wallet.unlock(TEST_WALLET_PWD)
     try:
-        ## private key of nathan, which is the referrer
+        ## private key of faucet, which is the referrer
         inst.wallet.addPrivateKey(private)
     except Exception as e:
         pass
     
-    account = cybex.Account('nathan')
+    account = cybex.Account(inst.const['master_account'])
 
     kwargs = {
         'fee':{"amount": 100, "asset_id": "1.3.0"},
@@ -204,7 +204,7 @@ def update_owner_keys(inst, obj, account=None, **kwargs):
     # for testing multi-Sig
     # need fee to update active keys
     fee = inst.fee[6]['fee']['fee']/100000
-    inst.transfer(account, fee, 'CYB', '', 'nathan')
+    inst.transfer(account, fee, 'CYB', '', inst.const['master_account'])
     account = cybex.Account(account)
     account["active"] = obj
     op = operations.Account_update(**{
@@ -219,7 +219,7 @@ def update_active_keys(inst, obj, account=None, **kwargs):
     # for testing multi-Sig
     # need fee to update active keys
     fee = inst.fee[6]['fee']['fee']/100000
-    inst.transfer(account, fee, 'CYB', '', 'nathan')
+    inst.transfer(account, fee, 'CYB', '', inst.const['master_account'])
     account = cybex.Account(account)
     account["active"] = obj
     op = operations.Account_update(**{
@@ -315,7 +315,7 @@ def create_accounts(inst, num=1):
 def create_asset(inst, precision=5, max_supply=100000000, core_exchange_rate=2000):
     symbol = genSymbol()
     try:
-        inst.create_asset(symbol, precision, max_supply, {symbol: 1, 'CYB': core_exchange_rate}, 'description', account='nathan')
+        inst.create_asset(symbol, precision, max_supply, {symbol: 1, 'CYB': core_exchange_rate}, 'description', account=inst.const['master_account'])
     except Exception as err:
         logging.error("failed to create asset,because %s",err)
         return False
@@ -328,7 +328,7 @@ def transfer_asset(inst, name, amount, asset):
     inst.transfer(name, amount, asset, '', inst.const['master_account'])
 
 def issue_asset(inst, symbol, max_supply=100000000):
-    inst.issue_asset('nathan', max_supply, symbol, account='nathan')
+    inst.issue_asset(inst.const['master_account'], max_supply, symbol, account=inst.const['master_account'])
 
 def get_account_id(acc):
     a = cybex.Account(acc)

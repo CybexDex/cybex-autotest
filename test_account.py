@@ -51,7 +51,10 @@ def test_updateActiveKey(INSTANCE, cleartxpool):
     pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
     key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
     logging.info("account %s have been created", name)
-    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
+    
+    acc = INSTANCE.const['master_account']
+
+    INSTANCE.transfer(name, 5, 'CYB', '', acc)
     assert cybex.Account(name)['active']['key_auths'][0][0] != key
     before = cybex.Account(name).balance('CYB')
     update_active_key(INSTANCE, key, account=name)
@@ -75,7 +78,9 @@ def test_updateMemoKey(INSTANCE, cleartxpool):
     logging.info("account %s has been created", name)
     activeKey = account['active']['wif_priv_key']
     INSTANCE.wallet.addPrivateKey(activeKey)
-    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
+
+    acc = INSTANCE.const['master_account']
+    INSTANCE.transfer(name, 5, 'CYB', '', acc)
     memo_key = key
     assert cybex.Account(name)['options']['memo_key'] != memo_key
     before = cybex.Account(name).balance('CYB')
@@ -108,7 +113,9 @@ def test_updateOwnerKey(INSTANCE, cleartxpool):
     pri = '5KiPyXzwfxdDXMb4Kchsb65hAsrshWEnbEuvQYK1QraZbhXfKWP'
     key = 'CYB8HuafNGYMaC1PTJypyEGKyo8Nf5z7XSYzspL68aRVMeof3rJNx'
     logging.info("account %s have been created", name)
-    INSTANCE.transfer(name, 5, 'CYB', '', 'nathan')
+
+    acc = INSTANCE.const['master_account']
+    INSTANCE.transfer(name, 5, 'CYB', '', acc)
     assert cybex.Account(name)['owner']['key_auths'][0][0] != key
     before = cybex.Account(name).balance('CYB')
     update_owner_key(INSTANCE, key, account=name)
@@ -184,9 +191,10 @@ def test_MiltiSig(INSTANCE, cleartxpool):
     update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
     transfer_fee = INSTANCE.fee[0]['fee']['fee']/100000
 
-    INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')
+    acc = INSTANCE.const['master_account']
+    INSTANCE.transfer(name1, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name2, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name3, amount, 'CYB', '', account=acc)
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
@@ -242,9 +250,10 @@ def test_MiltiSigNotEnoughSign(INSTANCE, cleartxpool):
     create_proposal_fee = INSTANCE.fee[22]['fee']['fee']/100000
     update_proposal_fee = INSTANCE.fee[23]['fee']['fee']/100000
 
-    INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')
+    acc = INSTANCE.const['master_account']
+    INSTANCE.transfer(name1, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name2, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name3, amount, 'CYB', '', account=acc)
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.chain['chain_id'])
     if temp.wallet.locked():
@@ -303,9 +312,10 @@ def test_MultiSigDisApprove(INSTANCE, cleartxpool):
     delete_proposal_fee = INSTANCE.fee[24]['fee']['fee']/100000
     transfer_fee = INSTANCE.fee[0]['fee']['fee']/100000
 
-    INSTANCE.transfer(name1, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name2, amount, 'CYB', '', account='nathan')
-    INSTANCE.transfer(name3, amount, 'CYB', '', account='nathan')
+    acc = INSTANCE.const['master_account']
+    INSTANCE.transfer(name1, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name2, amount, 'CYB', '', account=acc)
+    INSTANCE.transfer(name3, amount, 'CYB', '', account=acc)
     temp = cybex.Cybex(node = INSTANCE.const['node_url'], proposer=name1)
     cybex.cybex.cybex_debug_config(INSTANCE.const['chain_id'])
     if temp.wallet.locked():
