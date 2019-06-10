@@ -452,7 +452,13 @@ def create_data(INSTANCE):
     issue_asset(INSTANCE, data['asset2'])
     logging.info("issue the 2 assets")
     transfer_asset(INSTANCE, data['alice']['account'], 10000000, data['asset1'])
+    time.sleep(3)
+    print('-------------------------------------')
+    print(cybex.Account(data['alice']['account']))
+    print('-------------------------------------')
     transfer_asset(INSTANCE, data['bob']['account'], 10000000, data['asset2'])
+    time.sleep(3)
+
     logging.info("transfer 1000000 of %s to alice and 1000000 of %s to bob", data['asset1'], data['asset2'])
     issue_CYB(INSTANCE, data['alice']['account'], 1)
     issue_CYB(INSTANCE, data['bob']['account'], 1)
